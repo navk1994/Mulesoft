@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="605c8dca-af63-44e6-a25f-037e0400b1bd" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="1eb56c60-45b8-4eee-a9cf-79bf60278fd7" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" database="schools" />
+	</db:config>
+	<flow name="databasesSelectFlow" doc:id="074fd937-5357-4fab-9cca-e37c305319a4" >
+		<http:listener doc:name="Listener" doc:id="0c931f53-c8d2-432d-b1d9-0e8c4b811cfc" path="/select" config-ref="HTTP_Listener_config"/>
+		<set-variable value="#[message.attributes.queryParams.C]" doc:name="Choice" doc:id="733a6539-2a9f-40b8-bf4f-447e1e1b0ca7" variableName="C"/>
+		<db:select doc:name="Select" doc:id="3c2ad246-4973-4cc1-84f1-4b32bca6b66a" config-ref="Database_Config">
+			<db:sql >SELECT * FROM school</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="e8db120f-1c44-403b-973b-285cef0373b8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"data" : payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="databasesInsertFlow" doc:id="5bf3d033-e41f-473c-b843-23ef99731fb8" >
+		<http:listener doc:name="Listener" doc:id="1f0a1084-694e-4db0-b3e2-ef51fccfd1d0" config-ref="HTTP_Listener_config" path="/insert"/>
+		<set-variable value="#[message.payload.regno]" doc:name="Reg No" doc:id="4df46550-af7d-48c8-8bc5-3113741ee0c3" variableName="regno"/>
+		<set-variable value="#[message.payload.name]" doc:name="Name" doc:id="5a74862e-2981-48ee-b98d-db33df8773fb" variableName="name"/>
+		<set-variable value="#[message.payload.marks]" doc:name="Marks" doc:id="60800d0a-0f71-4670-9366-65557e9764e9" variableName="marks"/>
+		<set-variable value="#[message.payload.grp]" doc:name="Group" doc:id="7572f4c5-f137-481d-bcdf-5105d306fae4" variableName="grp"/>
+		<db:insert doc:name="Insert" doc:id="1640eba5-e7a4-48b2-9403-8e6134443d39" config-ref="Database_Config">
+			<db:sql >INSERT INTO school (regno, name, marks, grp) VALUES (:regno, :name, :marks, :grp)</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"regno": vars.regno as Number,
+	"name": vars.name,
+	"marks": vars.marks as Number,
+	"grp": vars.grp
+}]]]></db:input-parameters>
+		</db:insert>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="51ed1298-c10f-44ad-a80f-b59e5005046c" mimeType="text/html"/>
+	</flow>
+	<flow name="databasesUpdateFlow" doc:id="ad4c465c-563c-4b07-9bb9-78de052a4fce" >
+		<http:listener doc:name="Listener" doc:id="13e6f1c2-c5a3-4880-9055-74a3b52a038f" config-ref="HTTP_Listener_config" path="/update"/>
+		<set-variable value="#[message.payload.grp]" doc:name="Group" doc:id="eb783c0e-035a-4453-a468-677310e58c5d" variableName="grp" />
+		<set-variable value="#[message.payload.marks]" doc:name="Marks" doc:id="e192b152-c45b-4302-82ef-7bea7cbca06c" variableName="marks" />
+		<set-variable value="#[message.payload.name]" doc:name="Name" doc:id="fab6010d-424c-46b1-86e8-efa783cecefc" variableName="name" />
+		<set-variable value="#[message.payload.regno]" doc:name="Reg No" doc:id="990f1b25-18f6-41e9-9ab8-ef6aac761094" variableName="regno" />
+		<db:update doc:name="Update" doc:id="bbea1c2a-cc11-4c58-bab3-038fde32a20d" config-ref="Database_Config">
+			<db:sql >UPDATE school SET  name=:name, marks=:marks, grp=:grp WHERE regno=:regno</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"regno": vars.regno as Number,
+	"name": vars.name,
+	"marks": vars.marks as Number,
+	"grp": vars.grp
+}]]]></db:input-parameters>
+		</db:update>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="18910db7-afbd-4333-8dc6-690e18025d3b" mimeType="text/html"/>
+	</flow>
+</mule>

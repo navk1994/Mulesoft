@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8fc1942a-a0fd-4155-8a4a-e3dfde52d953" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="abcFlow" doc:id="bf5656d3-74e4-4e1e-a5a3-328a1ad8f44b" >
+		<http:listener doc:name="Listener" doc:id="9a982a87-6271-4ed4-8efb-3047a0a9afd8" config-ref="HTTP_Listener_config" path="/qa"/>
+		<set-payload value='#[message.attributes.method ++ "localhooost"]' doc:name="Set Payload" doc:id="1aaea1f0-f18e-43c0-bb97-eaf3e06aefa5" mimeType="text/html"/>
+	</flow>
+</mule>

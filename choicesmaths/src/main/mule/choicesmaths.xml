@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="563d5348-b517-47c5-9063-31a09b504d69" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="GetChoicesMathsFlow" doc:id="f46693d7-158b-4c14-a5e6-ffa2e5c6c00b" >
+		<http:listener doc:name="Listener" doc:id="8e1b759b-bdee-41be-a643-64e62ef29409" config-ref="HTTP_Listener_config" path="/maths" allowedMethods="GET"/>
+		<set-variable value="#[message.attributes.queryParams.C]" doc:name="Variable Calculation" doc:id="a8bad42e-bb0d-4997-8429-fc8b64abc48c" variableName="C"/>
+		<set-variable value="#[message.attributes.queryParams.NO1 as Number]" doc:name="NO1" doc:id="b7ffc1ca-bcd6-4a63-abbb-cb92f35514eb" variableName="NO1"/>
+		<set-variable value="#[message.attributes.queryParams.NO2 as Number]" doc:name="NO2" doc:id="ef16167a-3372-4f2a-b4b9-1545758d216b" variableName="NO2"/>
+		<choice doc:name="Choice" doc:id="c7436c04-105d-49a2-b4fd-ab2fd6763885" >
+			<when expression='#[vars.C=="add"]'>
+				<set-payload value="#[(vars.NO1 + vars.NO2) as String]" doc:name="Set Payload" doc:id="7dcbcb1b-d3ff-497e-a038-e98564971137" mimeType="text/html"/>
+			</when>
+			<when expression='#[vars.C=="sub"]'>
+				<set-payload value="#[(vars.NO1 - vars.NO2) as String]" doc:name="Set Payload" doc:id="401ecb7b-1a94-44ce-a105-391ed30a1559" mimeType="text/html"/>
+			</when>
+			<when expression='#[vars.C=="mul"]'>
+				<set-payload doc:name="Set Payload" doc:id="fc217b06-ae90-4c2b-b167-0c17b951075a" value="#[(vars.NO1 * vars.NO2) as String]" mimeType="text/html"/>
+			</when>
+			<when expression='#[vars.C=="div"]'>
+				<set-payload value="#[(vars.NO1 / vars.NO2) as String]" doc:name="Set Payload" doc:id="d3f28a3d-aadd-4e89-9887-01563f093c51" mimeType="text/html"/>
+			</when>
+			<otherwise >
+				<set-payload value="Invalid operator" doc:name="Set Payload" doc:id="1956d217-0fab-490a-8535-3eca50f8cf28" mimeType="text/html"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="POSTChoicesMathsFlow" doc:id="509da719-7925-4f73-8bad-044fa18d9ab9" >
+		<http:listener doc:name="Listener" doc:id="7bb624b9-8227-4bd8-80d7-b010e8673df7" config-ref="HTTP_Listener_config" path="/maths" allowedMethods="POST"/>
+		<set-variable value="#[message.payload.C]" doc:name="Copy_of_Variable Calculation" doc:id="40f054c6-64af-41b7-88d8-7a4484450a22" variableName="C" />
+		<set-variable value="#[message.payload.NO1 as Number]" doc:name="Copy_of_NO1" doc:id="137f7d4e-7801-4591-b369-c5d096bb2a58" variableName="NO1" />
+		<set-variable value="#[message.payload.NO2 as Number]" doc:name="Copy_of_NO2" doc:id="007ac7d6-d039-4ba7-b8ad-82d3876d3863" variableName="NO2" />
+		<choice doc:name="Copy_of_Choice" doc:id="acda0de5-b535-4544-847e-aadc84aab95a" >
+			<when expression='#[vars.C=="add"]' >
+				<set-payload value="#[(vars.NO1 + vars.NO2) as String]" doc:name="Copy_of_Set Payload" doc:id="a2b369f2-affe-4b9c-be57-c741cb2c2fee" mimeType="text/html" />
+			</when>
+			<when expression='#[vars.C=="sub"]' >
+				<set-payload value="#[(vars.NO1 - vars.NO2) as String]" doc:name="Copy_of_Set Payload" doc:id="882b3112-0906-4d86-9362-3ebdd9991ba8" mimeType="text/html" />
+			</when>
+			<when expression='#[vars.C=="mul"]' >
+				<set-payload value="#[(vars.NO1 * vars.NO2) as String]" doc:name="Copy_of_Set Payload" doc:id="10b7c921-acd6-4dce-a6b0-79195115155f" mimeType="text/html" />
+			</when>
+			<when expression='#[vars.C=="div"]' >
+				<set-payload value="#[(vars.NO1 / vars.NO2) as String]" doc:name="Copy_of_Set Payload" doc:id="84b7eb94-d259-4627-ada0-ba7b488f91c0" mimeType="text/html" />
+			</when>
+			<otherwise >
+				<set-payload value="Invalid operator" doc:name="Copy_of_Set Payload" doc:id="fae63e36-e287-4fc0-8a2e-2948536e6b4f" mimeType="text/html" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="GETMarks" doc:id="6b49ac93-324f-469f-b61b-d4b10e75a4e0" >
+		<http:listener doc:name="Listener" doc:id="4839ede8-33c1-41e0-9ab6-1296755f6266" config-ref="HTTP_Listener_config" path="/mathsvar" allowedMethods="GET"/>
+		<set-variable value="#[message.attributes.queryParams.phy as Number]" doc:name="Physics Mark" doc:id="bbaf9d39-ee90-4abe-a312-76f4b248f618" variableName="phy" />
+		<set-variable value="#[message.attributes.queryParams.che as Number]" doc:name="Chemistry Mark" doc:id="85d45b15-48c8-452e-a342-3365269c4de7" variableName="che" />
+		<set-variable value="#[message.attributes.queryParams.maths as Number]" doc:name="Maths Mark" doc:id="e0e918ab-05c4-470d-b11f-2c3cfd4d9357" variableName="maths" />
+		<ee:transform doc:name="Transform Message" doc:id="0dd0f929-db5f-4999-8c18-bf5bae7bb22d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var college = "QA Consulting"
+var total = vars.phy + vars.che + vars.maths
+fun percentage(total) = (total/300) * 100
+fun result(total) =
+if(total>50)
+	"Pass"
+else
+	"Bad"	
+		
+---
+{
+	"Physics Mark" : vars.phy,
+	"Chemistry Mark" : vars.che,
+	"Math's Mark" : vars.maths,
+	"Total Marks" : total,
+	"Percentage": percentage(total),
+	"Pass": result(total)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="POSTMarks" doc:id="e5580bf6-389e-4303-bea8-29e699614917" >
+		<http:listener doc:name="Listener" doc:id="de44ada8-aa91-4a08-8c5e-7a1f1552f366" config-ref="HTTP_Listener_config" path="/mathsvar" allowedMethods="POST" />
+		<set-variable value="#[message.payload.phy as Number]" doc:name="Physics Mark" doc:id="1afe59d2-dc64-4f07-8bcd-952eba578e4e" variableName="phy" />
+		<set-variable value="#[message.payload.che as Number]" doc:name="Chemistry Mark" doc:id="4afc3dfa-4660-4bbf-a1ce-6512d8264e13" variableName="che" />
+		<set-variable value="#[message.payload.maths as Number]" doc:name="Maths Mark" doc:id="fad1451c-0376-4556-a51f-9627544918a7" variableName="maths" />
+		<ee:transform doc:name="Copy_of_Transform Message" doc:id="746b3c60-4dd2-4bdb-a286-37c19477e4fc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var college = "QA Consulting"
+var total = vars.phy + vars.che + vars.maths
+fun percentage(total) = (total/300) * 100
+fun result(total) =
+if(total>50)
+	"Pass"
+	
+
+else
+	"Fail"	
+		
+---
+{
+	"Physics Mark" : vars.phy,
+	"Chemistry Mark" : vars.che,
+	"Math's Mark" : vars.maths,
+	"Total Marks" : total,
+	"Percentage": percentage(total),
+	"Grade": if(percentage(total) < 60) "Fail"
+	else if (percentage(total) < 70) "C"
+	else if (percentage(total) < 80) "B"
+	else if (percentage(total) < 90) "A"
+	else "A+"
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

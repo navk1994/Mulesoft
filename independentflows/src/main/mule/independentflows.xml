@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2dc474e6-5300-49aa-9b3f-f0d7e4dfc735" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="Flow" doc:id="5b8ebf73-3668-4d32-8334-dfd9a776b04a" >
+		<http:listener doc:name="Listener" doc:id="588621f2-95be-4f54-baea-f0c03a831b6f" config-ref="HTTP_Listener_config" path="/getentry" allowedMethods="POST"/>
+		<set-variable value="#[message.payload.C]" doc:name="Operations" doc:id="15c683fa-1e7b-476f-941a-d2f7b7bbe62e" variableName="C" />
+		<http:request method="GET" doc:name="Request" doc:id="c3399e30-5fd6-4c16-a346-87910d496089" url="http://jsonplaceholder.typicode.com/posts"/>
+		<choice doc:name="Choice" doc:id="24d9e515-926d-4dab-b12b-ce0faab30523" >
+			<when expression='#[vars.C=="title"]'>
+				<ee:transform doc:name="Transform Message" doc:id="b03e8163-d166-48ec-a739-aa3b70b47bd8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+{
+	title: message.payload map(item) -> {
+		"Title" : item.title
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<when expression='#[vars.C=="body"]'>
+				<ee:transform doc:name="Transform Message" doc:id="227ebdf7-b2c1-4077-9359-3417754e7e2a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	body: message.payload		
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<set-payload value='#["fix your life"]' doc:name="Set Payload" doc:id="3fe84a17-7bd5-47bd-abf3-74d22056ffef" mimeType="text/html"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="getFlow" doc:id="696e67f2-9ecd-486d-81b0-1c10f0ce98be" >
+		<http:listener doc:name="Listener" doc:id="740f74da-e529-4cc7-83b9-467dea5c445c" config-ref="HTTP_Listener_config" path="/sendnum" allowedMethods="GET"/>
+		<ee:transform doc:name="Transform Message" doc:id="f5b6c047-5988-41ef-bee8-55141b9d90f0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Name" : "John",
+	"Gender" : "Male",
+	"Age" : 30
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

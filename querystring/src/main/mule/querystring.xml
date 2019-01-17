@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="09b1e2bc-4b80-4202-acb7-2d21760c54c8" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="querystringFlow" doc:id="41385381-43de-41b9-aa66-a422b8673e1b" >
+		<http:listener doc:name="Listener" doc:id="0b19df20-77c6-4ee7-a051-27c8fa789084" config-ref="HTTP_Listener_config" path="/getname"/>
+		<set-payload value='#[(attributes.queryParams.Name as String) ++ " lives in " ++ (attributes.queryParams.City as String)]' doc:name="Set Payload" doc:id="f1b28f92-15cb-4749-91b2-a2954b9577e9" mimeType="text/html"/>
+	</flow>
+</mule>

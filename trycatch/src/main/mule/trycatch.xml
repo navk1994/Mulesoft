@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="8f474b96-e2cb-4954-b05a-4868d09cf13c" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" database="schools" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c98dd936-7dfb-4a37-a077-1a35f9d615f2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="trycatchFlow" doc:id="e8eb11cb-f0b2-4a7d-8382-cf7ddfda86e3" >
+		<http:listener doc:name="Listener" doc:id="05b648c4-3931-497c-ba6d-c0539d5a80c4" config-ref="HTTP_Listener_config" path="/result"/>
+		<try doc:name="Try" doc:id="daaea109-1e7d-4fb2-ac6c-a80a65fbbc50" >
+			<logger level="INFO" doc:name="Logger A" doc:id="a654220a-21f3-49c2-a4e6-b5df4dec9a6b" message="#[payload]"/>
+			<db:select doc:name="Select" doc:id="40bf67d4-45e9-40fc-a2ce-efe9d2d08c54" config-ref="Database_Config">
+				<db:sql >SELECT * FROM school</db:sql>
+			</db:select>
+			<logger level="INFO" doc:name="Logger B" doc:id="54c5224c-3549-45a2-a6c6-b59b3b6b5fbd" message="#[payload]"/>
+			<ee:transform doc:name="Transform Message" doc:id="d31287d4-87e3-432b-a289-1b943fe83c7a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+{
+	"data": payload
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d5baa2a2-e3c5-4f71-b9e2-d5e610c6cc5a" >
+					<ee:transform doc:name="Transform Message" doc:id="d447667f-88db-463f-97e3-76bc4896f9a8" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "The database is not running"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+</mule>

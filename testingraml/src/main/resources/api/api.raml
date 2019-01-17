@@ -1,0 +1,48 @@
+#%RAML 1.0
+
+    title: RAMLwithMULE
+
+    version: 1.0
+
+    baseUri: http://localhost:8080/api
+    
+    types:
+      User:
+      
+        type: object
+        properties:
+          firstname: string
+          lastname: string
+          age: number
+    
+    /get:
+
+        get:
+
+            description: sample
+
+            responses:
+
+               
+
+                    body:
+
+                        text/plain:
+
+                            example: This is get call, MULE flow from RAML
+
+    /show:
+
+        get:
+
+            description: sample
+
+            responses:
+
+                200:
+
+                    body:
+
+                        application/json:
+                            type: User
+                           

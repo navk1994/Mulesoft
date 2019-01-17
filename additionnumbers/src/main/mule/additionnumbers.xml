@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="77f698f5-8a72-4c7a-8c3b-81a1d884aaa1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="getAdditionFlow" doc:id="ddd08e25-4fa9-4a9b-8bc3-72f7f265ccd2" >
+		<http:listener doc:name="Listener" doc:id="f9a4da2a-c883-4e41-add9-259d8f7b8927" config-ref="HTTP_Listener_config" path="/maths" allowedMethods="GET"/>
+		<set-payload value="#[(attributes.queryParams.NO1 as Number + attributes.queryParams.NO2 as Number) as String]" doc:name="Set Payload" doc:id="e7259907-0996-40b8-aa49-a7e6e61fdaa9" mimeType="text/html"/>
+	</flow>
+	<flow name="postAdditionFlow" doc:id="c0060645-6db8-4a1e-84b5-d5814398ca3e" >
+		<http:listener doc:name="Listener" doc:id="3a6422e9-69e0-4870-80fe-f1f8e88bb938" config-ref="HTTP_Listener_config" path="/maths" allowedMethods="POST"/>
+		<set-payload value="#[(message.payload.NO1 as Number + message.payload.NO2 as Number) as String]" doc:name="Set Payload" doc:id="aac75204-fc9a-48f8-8449-d3720d2419bb" mimeType="text/html"/>
+	</flow>
+</mule>

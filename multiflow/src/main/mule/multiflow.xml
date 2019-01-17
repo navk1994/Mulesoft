@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a1e9827d-01f8-4281-aba2-265a685b3c9c" >
+		<http:listener-connection host="0.0.0.0" port="8084" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="502ea319-5673-4dcd-bf3d-88b62db5dd9d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config2" doc:name="HTTP Listener config" doc:id="f529dc3f-0c16-4613-8abe-7dd7add5d6b9" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="qaFlow" doc:id="89e68141-de6d-4b83-9628-2363a9410251" >
+		<http:listener doc:name="Listener" doc:id="6134f61e-feed-468d-8e25-ec3fc8f38285" config-ref="HTTP_Listener_config" path="/qa"/>
+		<set-payload value="You called QA flow" doc:name="Set Payload" doc:id="e3fb1a40-ab41-457b-922e-40606781609f" mimeType="text/html"/>
+	</flow>
+	<flow name="manchesterFlow" doc:id="db26b8ee-a66e-4169-acb0-835c4c53a174" >
+		<http:listener doc:name="Listener" doc:id="e01ac75f-9b04-4882-bd06-c03852f4fdcf" path="/manchester" config-ref="HTTP_Listener_config"/>
+		<set-payload value="You called Manchester flow" doc:name="Set Payload" doc:id="283c31db-b157-456d-96b2-fdd208fe16d0" mimeType="text/html"/>
+	</flow>
+</mule>

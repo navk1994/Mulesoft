@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e27af6d6-34ad-4a0b-901d-8e5535af08ee" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="subflowsFlow" doc:id="2af18012-bd50-42ae-a5e7-a8abd8cc1ce2" >
+		<http:listener doc:name="Listener" doc:id="0800c233-74cd-42f5-bfee-9eb8d9613f43" path="/subflow" config-ref="HTTP_Listener_config"/>
+		<set-variable value="#[(message.payload.NO1 as Number)]" doc:name="NO1" doc:id="fc69dbf6-fda2-4b16-b216-b91634a6d61b" variableName="NO1" />
+		<set-variable value="#[message.payload.NO2]" doc:name="NO2" doc:id="dc80d10e-ca22-4fa8-a156-b60fafeaa5f1" variableName="NO2"/>
+		<set-variable value="#[(message.payload.C as String)]" doc:name="Operation" doc:id="765e3f62-223c-454a-a43d-440c4f04c1b9" variableName="C" />
+		<choice doc:name="Choice" doc:id="b97c69ce-b5ee-4422-95c0-32af99418a45" >
+			<when expression='#[vars.C=="add"]'>
+				<flow-ref doc:name="Addition" doc:id="9686a2c2-54ad-45a0-9d67-e614982a5b73" name="additionSubFlow" />
+			</when>
+			<when expression='#[vars.C=="sub"]'>
+				<flow-ref doc:name="Subtraction" doc:id="e09509a1-feba-4033-8a98-5d72c33cfd6a" name="subtractionSubFlow"/>
+			</when>
+			<when expression='#[vars.C=="div"]'>
+				<flow-ref doc:name="Divide" doc:id="650bcc99-7e9f-40e6-8914-d49bfc3b8193" name="divideSubFlow"/>
+			</when>
+			<when expression='#[vars.C=="mul"]'>
+				<flow-ref doc:name="Multiply" doc:id="a8fbfb12-3fd2-4731-b1a4-550de14269ae" name="multiplySubFlow" />
+			</when>
+		</choice>
+	</flow>
+	<sub-flow name="additionSubFlow" doc:id="68285df7-cc4b-4a2c-999a-e357ca7fadc2" >
+		<set-variable value="#[(vars.NO1 as Number) + (vars.NO2 as Number)]" doc:name="Set Variable" doc:id="b6e134b7-cb7f-4745-8176-03b1cdc191bf" variableName="Result"/>
+		<set-payload value='#["Result of addition " ++ vars.Result]' doc:name="Set Payload" doc:id="a8c1d294-ae45-407b-9337-75b440b3813f" mimeType="text/html" />
+	</sub-flow>
+	<sub-flow name="subtractionSubFlow" doc:id="92eecaae-250f-41de-b32d-a6ea99389c46" >
+		<set-variable value="#[vars.NO1 as Number - vars.NO2 as Number]" doc:name="Set Variable" doc:id="6d2ae0e5-acff-4180-9d8c-7d93c8087364" variableName="Result" />
+		<set-payload value='#["Result of subtraction " ++ vars.Result]' doc:name="Set Payload" doc:id="43d5299f-deb4-43ec-b9e8-2024682646c0" mimeType="text/html"/>
+	</sub-flow>
+	<sub-flow name="divideSubFlow" doc:id="41cb99f1-1f86-44fb-a3dc-97bd899f93c0" >
+		<set-variable value="#[vars.NO1 as Number / vars.NO2 as Number]" doc:name="Set Variable" doc:id="5f46393a-55e0-458b-aa2f-3bdd377e0795" variableName="Result" />
+		<set-payload value='#["Result of dividing " ++ vars.Result]' doc:name="Set Payload" doc:id="e61ec0e3-6cdb-40a6-ab17-3cf956ef24da" mimeType="text/html"/>
+	</sub-flow>
+	<sub-flow name="multiplySubFlow" doc:id="f5f2d097-0f03-404f-9d2e-53833195f7d0" >
+		<set-variable value="#[vars.NO1 as Number * vars.NO2 as Number]" doc:name="Set Variable" doc:id="4563b6fa-5a00-42ef-af91-551e5bf6ad6f" variableName="Result" />
+		<set-payload value='#["Result of multiplying " ++ vars.Result]' doc:name="Set Payload" doc:id="9e8e1aef-0cbd-4534-82af-278edc5aa217" mimeType="text/html"/>
+	</sub-flow>
+</mule>

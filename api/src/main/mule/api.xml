@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f21a6410-adbd-4751-8834-f9dbba83f9ed">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="getOnlyFlow" doc:id="35d5de5f-5619-4868-901e-9e71d21be5ce" >
+		<http:listener doc:name="Listener" doc:id="d61bca4c-29d7-457b-a62e-29da3211c6b0" config-ref="HTTP_Listener_config" path="/api" allowedMethods="GET"/>
+		<set-payload value="Welcome my friend" doc:name="Set Payload" doc:id="fac8378e-4e8c-40c1-b185-80c6506fdaa0" />
+	</flow>
+	<flow name="postOnlyFlow" doc:id="236ef375-5cf8-4508-9282-ef0850a2a3b7" >
+		<http:listener doc:name="Listener" doc:id="e48a72b0-8d69-44ee-a040-d2c15539ec87" config-ref="HTTP_Listener_config" path="/api" allowedMethods="POST"/>
+		<set-payload value='#["Hello " ++ (message.payload.N)]' doc:name="Set Payload" doc:id="baabb1db-3fbd-46cf-9c9e-69542e3744a1" mimeType="text/html"/>
+	</flow>
+</mule>
